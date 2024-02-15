@@ -5,12 +5,13 @@ import android.widget.TextView
 import com.harshadachame.todoapp.R
 import com.harshadachame.todoapp.model.Todo
 import android.content.Context
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
 
-
+private const val TAG = "TodoAdapter"
 class TodoAdapter(context: Context, private var todos: List<Todo>) : ArrayAdapter<Todo>(context,0,todos),
     Filterable {
 
@@ -21,13 +22,14 @@ class TodoAdapter(context: Context, private var todos: List<Todo>) : ArrayAdapte
         val todo = getItem(position)
 
         var listItemView = convertView
+        Log.d(TAG, "getView() called with: position = $position, convertView = $convertView, parent = $parent")
         if(listItemView ==  null){
             listItemView = LayoutInflater.from(context).inflate(R.layout.list_item_todo,parent, false)
         }
 
         val titleTv :TextView = listItemView!!.findViewById(R.id.titleText)
         val statusTv :TextView = listItemView.findViewById(R.id.statusText)
-
+        Log.e(TAG, "getView: "+ todo?.todo)
         titleTv.text = todo?.todo
         statusTv.text = if(todo?.completed== true) "Completed" else "Not Completed"
 
@@ -41,11 +43,26 @@ class TodoAdapter(context: Context, private var todos: List<Todo>) : ArrayAdapte
             FilterType.NOT_COMPLETED -> todos.filter{!it.completed}
             else -> todos
         }
+        notifyDataSetChanged()
     }
 
     fun updateList(newList: List<Todo>){
         todos = newList
+        setFilter(filterType)
         notifyDataSetChanged()
     }
+
+    override fun getCount(): Int {
+        return filteredTodos.size
+    }
+
+    override fun getItem(position: Int): Todo? {
+        return filteredTodos[position]
+    }
+
+    override fun getItemId(position: Int): Long {
+        return filteredTodos[position].id.toLong()
+    }
+
 
 }

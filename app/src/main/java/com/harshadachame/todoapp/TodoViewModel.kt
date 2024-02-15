@@ -26,15 +26,19 @@ class TodoViewModel(private val apiService: TodoRepository) : ViewModel() {
                 val jsonElement = response.body()
 
                 if (jsonElement is JsonArray) {
-                    _todos.value = Gson().fromJson(jsonElement, object : TypeToken<List<Todo>>() {}.type)
+                    _todos.value =
+                        Gson().fromJson(jsonElement, object : TypeToken<List<Todo>>() {}.type)
                 } else if (jsonElement is JsonObject) {
                     val jsonArray = jsonElement.getAsJsonArray("todos")
-                    _todos.value = Gson().fromJson(jsonArray, object : TypeToken<List<Todo>>() {}.type)
+                    _todos.value =
+                        Gson().fromJson(jsonArray, object : TypeToken<List<Todo>>() {}.type)
                 }
             } else {
 
                 Log.e("TodoViewModel", "Error fetching todos: ${response.errorBody()}")
             }
         }
+
+
     }
 }
